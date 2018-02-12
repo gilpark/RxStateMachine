@@ -25,9 +25,9 @@ namespace Bebimbop.Example
 
 		//we done need Exit method since this example's transition mode is overwrite
 		//but we use OnCancel method to reset canvas group objects
-		private void One_Enter(float t)
+		private void One_Enter()
 		{
-			UiPanels[0].FadingIn(t);
+			UiPanels[0].FadingIn(1);
 		}
 		private void One_OnCancel()
 		{
@@ -35,9 +35,9 @@ namespace Bebimbop.Example
 		}
 
 		
-		private void Two_Enter(float t)
+		private void Two_Enter()
 		{
-			UiPanels[1].FadingIn(t);
+			UiPanels[1].FadingIn(1);
 		}
 		private void Two_OnCancel()
 		{
@@ -45,9 +45,9 @@ namespace Bebimbop.Example
 		}
 		
 		
-		private void Three_Enter(float t)
+		private void Three_Enter()
 		{
-			UiPanels[2].FadingIn(t);
+			UiPanels[2].FadingIn(1);
 		}
 		private void Three_OnCancel()
 		{
