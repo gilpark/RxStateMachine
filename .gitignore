@@ -32,3 +32,6 @@ sysinfo.txt
 # Builds
 *.apk
 
+# backups
+
+*.saved.bak
