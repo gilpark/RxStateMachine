@@ -1,5 +1,5 @@
 # Unity3D - RxStateMachine
-![](Images/Cancelable.gif  | width=500)
+![](Images/Cancelable.gif)
 
 State machine makes managing states easy, it is widely used on games and apps.
 However, there are not many state machines that designed with front-end in mind.
