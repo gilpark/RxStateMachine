@@ -28,7 +28,7 @@ Thanks to [thefuntastic](https://github.com/thefuntastic) and [neuecc](https://g
 
 ## Basic Usage
 
-An example project is included (Unity 2017.3) to show the State Machine in action.
+An example project is included (Unity 2017.3) to show the RxStateMachine in action.
 To use the state machine you need a few simple steps
 
 ##### 1. Include the RxStateMachine package
@@ -60,7 +60,7 @@ public StateMachine<States> MyStateMachine;
 MyStateMachine = StateMachine<States>.Initialize(this);
 ```
 
-This is where all of the magic in the StateMachine happens: in the background it inspects your MonoBehaviour (`this`) and looks for any methods described by the convention shown below.
+This is where all of the magic in the RxStateMachine happens: in the background it inspects your MonoBehaviour (`this`) and looks for any methods described by the convention shown below.
 
 You can call this at any time, but generally `Awake()` is a safe choice. 
 
@@ -259,18 +259,14 @@ RxStateMachine support multiple instances of StateMachine.
 
 Example Located `Assests/DemoScenes/MultipleStateMachineExample.unity`
 ![](Images/Multiple.gif)
-
-
 #### StateMachine Example
 This example demonstrate most functionalities on RxStateMachine
 Change Settings on the left side and see the difference between 3 transition modes and Test cancellation to see how it works on different modes
 
 Example Located `Assests/DemoScenes/StateMachineExample.unity`
 ##### Safe Mode
-![Safe Mode](Images/safeTransition.gif)
-
+![](Images/safeTransition.gif)
 ##### OverWrite Mode
-![OverWrite Mode](Images/OWTransition.gif)
-
+![](Images/OWTransition.gif)
 ##### Blend Mode
-![Blend Mode](Images/BlendTransition.gif)
+![](Images/BlendTransition.gif)
