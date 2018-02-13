@@ -251,7 +251,7 @@ in this example, we declare StateMachine in *GameManager.cs* and make GameManage
 * Cancel in OverWrite Mode
 * Cancel in Blend Mode
  
-#### Example Usage
+#### [TODO] Example Usage
 
 ## Exmaples
 #### Multiple StateMachine Example
