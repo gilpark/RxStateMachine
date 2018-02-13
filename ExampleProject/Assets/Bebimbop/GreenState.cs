@@ -26,19 +26,28 @@ namespace Bebimbop.Example
             Debug.Log("Entering GREEN Time : " + Time.time);
             UiPanel.FadingIn(1);
         }
-    
-        private void GREEN_OnCancel()
+        private void GREEN_EnterCancel()
         {
-            Debug.Log("GREEN  cancled");
+            Debug.Log("GREEN Enter cancled");
             UiPanel.DisableCanvasGroup(true);
         }
-  
+
+        
+        private void GREEN_ExitCancel()
+        {
+            Debug.Log("GREEN Exit cancled");
+            UiPanel.EnableCanvasGroup(true);
+        }
         private void GREEN_Exit()
         {
             Debug.Log("Exiting GREEN Time : " + Time.time);
             UiPanel.FadingOut(1);
         }
-
+        private void GREEN_Finally()
+        {
+          UiPanel.DisableCanvasGroup(true);
+        }
+        
 
         private float t;
         private bool _ranFor1Frame = false;

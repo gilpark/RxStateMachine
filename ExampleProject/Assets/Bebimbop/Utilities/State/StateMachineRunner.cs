@@ -85,22 +85,20 @@ namespace Bebimbop.Utilities.StateMachine
 				RoutineRunner(duration)
 					.DoOnCancel(() =>
 					{
-						 OnCancel.Invoke();
+						 EnterCancel.Invoke();
 						_enterInQue = true;
 					})
 					.DoOnSubscribe(()=>
 					{
 						IsInTransition.Value = true;
-						_currentState.Value = this;
-						
 					})
 					.Do(f =>{ if (duration > 0)_enterRoutine(f); })
 					.DoOnCompleted(() =>
 					{
 						if (duration == 0)_enterCall();
+						_currentState.Value = this;
 						_enterInQue = true;
 						IsInTransition.Value = false;
-						
 					});
 			}
 			_exitInQue = false;
@@ -108,7 +106,7 @@ namespace Bebimbop.Utilities.StateMachine
 				RoutineRunner(duration)
 					.DoOnCancel(() =>
 					{
-						OnCancel.Invoke();
+						ExitCancel.Invoke();
 						_exitInQue = true;
 					})
 					.DoOnSubscribe(()=>IsInTransition.Value = true)
@@ -118,6 +116,7 @@ namespace Bebimbop.Utilities.StateMachine
 						if (duration == 0)_exitCall();
 						_exitInQue = true;
 						IsInTransition.Value = false;
+						Finally.Invoke();						
 					});
 		}
 #region Enter properties
@@ -164,11 +163,16 @@ namespace Bebimbop.Utilities.StateMachine
 
 #endregion
 #region Finally, Update, LateUpdate, FixedUpdate properties
+		//todo encapsulate below actions??
 		public Action Update = DefaultVoid;
 		public Action LateUpdate = DefaultVoid;
 		public Action FixedUpdate = DefaultVoid;
-		public Action OnCancel = DefaultVoid;
-		public void SetCancel (Action callback) { OnCancel = callback; }
+		public Action EnterCancel = DefaultVoid;
+		public Action ExitCancel = DefaultVoid;
+		public Action Finally = DefaultVoid;
+		public void SetEnterCancel (Action callback) { EnterCancel = callback; }
+		public void SetExitCancel (Action callback) { ExitCancel = callback; }
+		public void SetFinally (Action callback) { Finally = callback; }
 		public void SetUpdate (Action callback) { Update = callback; }
 		public void SetLateUpdate (Action callback) { LateUpdate = callback; }
 		public void SetFixedUpdate (Action callback) { FixedUpdate= callback; }

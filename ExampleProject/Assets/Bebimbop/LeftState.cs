@@ -24,7 +24,7 @@ namespace Bebimbop.Example
 			_leftStateMachine.ChangeState((Left)idx);
 		}
 
-		private void One_Enter(float t)
+		private void One_Enter(float t) 
 		{
 			UiPanels[0].FadingIn(t);
 		}

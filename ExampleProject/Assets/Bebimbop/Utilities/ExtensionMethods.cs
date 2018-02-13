@@ -42,6 +42,13 @@ namespace Bebimbop.Utilities
             c.blocksRaycasts = false;
             if (setoZero) c.alpha = 0f;
         }
+        public static void EnableCanvasGroup(this CanvasGroup c, bool setoOne)
+        {
+            c.gameObject.SetActive(true);
+            c.interactable = true;
+            c.blocksRaycasts = true;
+            if (setoOne) c.alpha = 1f;
+        }
         
         public static float FromTo(this float _f, float _fromMin, float _fromMax, float _toMin, float _toMax)
         {

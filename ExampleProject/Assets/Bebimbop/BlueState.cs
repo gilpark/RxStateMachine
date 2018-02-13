@@ -16,10 +16,9 @@ namespace Bebimbop.Example
             UiPanel.DisableCanvasGroup(true);
         }
 
-      
-        
         public CanvasGroup UiPanel;
         public RectTransform EnterProgress,ExitProgress;
+
         //overwrite enter routine
         private void BLUE_Enter(float t)
         {
@@ -34,17 +33,13 @@ namespace Bebimbop.Example
             
             if (t == 1) EnterProgress.sizeDelta = new Vector2(0,30);
         }
-    
-        /// use them properly for a reset or somehting else
         /// this gets called while transitioning when chage state with overwrite transition
-        private void BLUE_OnCancel()
+        private void BLUE_EnterCancel()
         {
-            Debug.Log("BLUE  cancled");
-            EnterProgress.sizeDelta = new Vector2(0,30);
-            ExitProgress.sizeDelta = new Vector2(0,30);
-            UiPanel.DisableCanvasGroup(true);
+            Debug.Log("BLUE Enter cancled");
+           UiReset();
         }
-  
+
         private void BLUE_Exit(float t)
         {
             if (t == 0)
@@ -55,6 +50,22 @@ namespace Bebimbop.Example
             UiPanel.FadingOut(t);
             ExitProgress.sizeDelta = new Vector2(t.FromTo(0,1,0,1920),30);
             if(t == 1)  ExitProgress.sizeDelta = new Vector2(0,30);
+        }
+        private void BLUE_ExitCancel()
+        {
+            Debug.Log("BLUE Exit cancled");
+            UiPanel.EnableCanvasGroup(true);
+        }
+        private void BLUE_Finally()
+        {
+            Debug.Log("BLUE Finally called");
+            UiReset();
+        }
+        private void UiReset()
+        {
+            EnterProgress.sizeDelta = new Vector2(0,30);
+            ExitProgress.sizeDelta = new Vector2(0,30);
+            UiPanel.DisableCanvasGroup(true);
         }
     }
 }

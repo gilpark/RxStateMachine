@@ -61,6 +61,7 @@ namespace Bebimbop.Utilities.StateMachine
 			}
 
 			private Dictionary<object, StateMapping> _stateLookup;
+			
 			private void AddSubscriber_Internal(MonoBehaviour component)
 			{
 				var methods = component.GetType().GetMethods(BindingFlags.Instance | BindingFlags.DeclaredOnly |
@@ -98,8 +99,8 @@ namespace Bebimbop.Utilities.StateMachine
 								targetState.SetEnterCall(CreateDelegate<Action>(methods[i], component));
 							}
 							break;
-						case "OnCancel":
-							targetState.SetCancel(CreateDelegate<Action>(methods[i], component));
+						case "EnterCancel":
+							targetState.SetEnterCancel(CreateDelegate<Action>(methods[i], component));
 							break;
 						case "Exit":
 							if (methods[i].GetParameters().Length > 0 && methods[i].GetParameters()[0].ParameterType == typeof(float))
@@ -110,7 +111,13 @@ namespace Bebimbop.Utilities.StateMachine
 							{
 								targetState.SetExitCall(CreateDelegate<Action>(methods[i], component));
 							}
-							break;		
+							break;
+						case "ExitCancel":
+							targetState.SetExitCancel(CreateDelegate<Action>(methods[i], component));
+							break;
+						case "Finally":
+							targetState.SetFinally(CreateDelegate<Action>(methods[i], component));
+							break;	
 						case "Update":
 							targetState.SetUpdate(CreateDelegate<Action>(methods[i], component));
 							break;
@@ -247,6 +254,7 @@ namespace Bebimbop.Utilities.StateMachine
 			private StateMapping _currentState;
 			private LinkedObservable _queHistory = new LinkedObservable();
 			private ReactiveProperty<StateMapping> _stateStream = new ReactiveProperty<StateMapping>();
+			
 			/// <summary>
 			/// StateChange stream
 			/// </summary>
@@ -266,8 +274,9 @@ namespace Bebimbop.Utilities.StateMachine
 
 				var nextState = _stateLookup[newState];
 				
-				if (_currentState!=null && _currentState == nextState) return;
-
+				if (_currentState != null && _currentState == nextState) return;
+				//if (_StateInQeue != null && _StateInQeue == nextState) return;
+				
 				if (transition.Equals(StateTransition.Safe))
 				{
 					if (_currentState == null) //for initial run 
@@ -302,8 +311,10 @@ namespace Bebimbop.Utilities.StateMachine
 					else
 					{
 						//todo test more on OnCancle.Invoke
-						_StateInQeue.OnCancel.Invoke(); //invoke cancle incase previouse enter routine is done, which means call cancle to reset ui stuff b4 call next state enter
+						//_StateInQeue.EnterCancel.Invoke();
 						_queHistory.Cancle();
+						_currentState.Finally.Invoke();
+
 						_queHistory.Add(nextState.CreateNewRoutine(nextState.HasEnterRoutine ? enterDuration : 0f, true));
 						_StateInQeue = nextState;
 					}
@@ -324,6 +335,29 @@ namespace Bebimbop.Utilities.StateMachine
 					}
 				}
 			}
+
+			public void CancelTransition()
+			{
+				
+				//todo next sstate intransition
+				if(!IsInTransition)return;
+				
+				if (_currentState != null && !_currentState.HasExitRoutine)
+				{
+					Debug.Log("Current State doesn't have Exiting Routine.. you cannot cancel it");
+					return;
+				}
+				else if(_currentState != null && _currentState.HasExitRoutine)
+				{
+					if(!_currentState.IsInTransition.Value)_currentState.ExitCancel.Invoke();
+					_queHistory.Cancle();
+					return;
+				}
+				
+				_queHistory.Cancle();
+				_StateInQeue = null;
+			}
+
 			/// <summary>
 			/// the last state, can be null
 			/// </summary>
@@ -353,9 +387,10 @@ namespace Bebimbop.Utilities.StateMachine
 			{
 				get
 				{
-					if (_currentState == null) return false;
+					if (_currentState == null && _StateInQeue == null) return false;
 					
-					return _currentState.IsInTransition.Value;
+					return _StateInQeue!=null?_StateInQeue.IsInTransition.Value || _currentState.IsInTransition.Value 
+						: _currentState.IsInTransition.Value;
 				}
 			}
 			public StateMapping CurrentStateMap
