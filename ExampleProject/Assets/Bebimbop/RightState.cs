@@ -29,7 +29,7 @@ namespace Bebimbop.Example
 		{
 			UiPanels[0].FadingIn(1);
 		}
-		private void One_OnCancel()
+		private void One_Finally()
 		{
 			UiPanels[0].DisableCanvasGroup(true);
 		}
@@ -39,7 +39,7 @@ namespace Bebimbop.Example
 		{
 			UiPanels[1].FadingIn(1);
 		}
-		private void Two_OnCancel()
+		private void Two_Finally()
 		{
 			UiPanels[1].DisableCanvasGroup(true);
 		}
@@ -49,7 +49,7 @@ namespace Bebimbop.Example
 		{
 			UiPanels[2].FadingIn(1);
 		}
-		private void Three_OnCancel()
+		private void Three_Finally()
 		{
 			UiPanels[2].DisableCanvasGroup(true);
 		}
