@@ -33,7 +33,7 @@ but if you want to get a newer vision, **[Download Unirx](https://assetstore.uni
 * State Transition can be canceled
 * no co-routine used, more reliable functionality
 
-## Basic Usage (1 step transition pub/sub)
+## Simple Usage (State change pub/sub)
 To use the state machine you need a few simple steps
 
 ##### 1. Include the RxStateMachine package
@@ -85,9 +85,44 @@ _stateMachine.ChangeState(MyState.Init);
 				}
 			});
 ```
+## Basic Usage (OnEnter/OnExit Async Subscription)
+with Rx SateMachine, you can subscribe Sate's Enter and Exit.
+There are some points you need to pay attention to avoid confusion.
+1. On Enter, On Exit only accepts `Func<IObservable<Unit>>` data type.
+```C#
+_stateMachine.OnEnter(MyState.Init, () =>Observable.Timer(TimeSpan.FromSeconds(2f)).AsUnitObservable());
+```
+2. you can subscribe this OnEnter/OnExit stream as many as you can.
+3. However, OnEnter/OnExit transition will be completed when the last(longest) steam is complete.
+4. Which means, you can subscribe many OnEnter/OnExit on a State to handle different things.
+
+* Example
+```C#
+namespace Demo.StateMachine
+{
+	public class Demo2State : MonoBehaviour
+	{
+		public CanvasGroup Panel;
+		public MyState ThisState;
+		private StateMachine<MyState> _stateMachine;
+	
+		void Start ()
+		{
+			_stateMachine = Demo02Manager.Instance.StateMachine;
+			var duration = Demo02Manager.Instance.FadeDuration;
+			Panel.DisableCanvasGroup(true);
+			
+			_stateMachine.OnEnter(ThisState, () => Panel.FadeIn(duration).AsUnitObservable());
+			_stateMachine.OnExit(ThisState, () => Panel.FadeOut(duration).AsUnitObservable());
+		
+			if(ThisState == MyState.Init) _stateMachine.ChangeState(MyState.Init);
+		}
+	}
+}
+
+```
 
 ## Advanced Usage
-
 #### Multiple Script Setup
 To use RxStateMachine over multiple scripts is also simple.
 Here's basic example how to setup RxStateMachine in multiple scripts
