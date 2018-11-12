@@ -1,7 +1,7 @@
 # Unity3D - RxStateMachine
 ![](Images/Cancelable.gif)
 
-RxSateMachine v2.0 is out! It is more simpler and easy to use! for old version look in to 'Old' folder.
+RxSateMachine v2.0 is out! It is more simpler and easy to use! for old version look in to [Old](https://github.com/sendtogil/RxStateMachine/tree/master/Old) folder.
 
 State machine makes managing states easy, it is widely used in many games and apps.
 However, there are not many state machines that designed with front-end in mind.
@@ -25,9 +25,9 @@ but if you want to get a newer vision, **[Download Unirx](https://assetstore.uni
     * (ST1)Enter -> (ST1,ST2)Exit,Enter -> (ST2,ST3)Exit,Enter ->
 
 #### Flexible
-* Support multiple statemachine instances
-* Expend 2 step transition methods OnEnter/Exit behaviour as you wanted
-* Or just use 1 step transition
+* Subscribe OnEnter/Exit of State or just Sate changes 
+* Expend OnEnter/Exit behaviour as you wanted
+* Support multiple state machine instances
 
 #### Responsive
 * State Transition can be canceled
