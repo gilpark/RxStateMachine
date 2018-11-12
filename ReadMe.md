@@ -19,8 +19,10 @@ but if you want to get a newer vision, **[Download Unirx](https://assetstore.uni
 ## Features
 
 #### 2 Transition Modes
-* Safe
+* Regular
+    * (ST1)Enter -> (ST1)Exit -> (ST2)Enter -> 
 * Blend
+    * (ST1)Enter -> (ST1,ST2)Exit,Enter -> (ST2,ST3)Exit,Enter ->
 
 #### Flexible
 * Support multiple statemachine instances
