@@ -96,7 +96,7 @@ _stateMachine.OnEnter(MyState.Init, () =>Observable.Timer(TimeSpan.FromSeconds(2
 3. However, OnEnter/OnExit transition will be completed when the last(longest) steam is complete.
 4. Which means, you can subscribe many OnEnter/OnExit on a State to handle different things.
 
-* Example
+* below example using [RxFadeManager](https://github.com/sendtogil/RxFadeManager) to fade in and out on State changes.
 ```C#
 namespace Demo.StateMachine
 {
