@@ -35,4 +35,4 @@ sysinfo.txt
 # backups
 
 *.saved.bak
-*.meta
+*.cs.meta
