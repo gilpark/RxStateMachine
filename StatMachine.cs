@@ -12,6 +12,8 @@ namespace _Scripts.RxDevKit.StateMachine
 		private AsyncMessageBroker _broker  = new AsyncMessageBroker();
 		private bool _running = false;
 		private Enum _nextState;
+		//debug
+		private Enum _current;
 		//private	List<Enum> _history = new List<Enum>();
 	
 		public bool BlendMode = false;
@@ -24,6 +26,8 @@ namespace _Scripts.RxDevKit.StateMachine
 			public Enum Estate;
 			public readonly CompositeDisposable Disposable = new CompositeDisposable();
 			public readonly BoolReactiveProperty HasEntered = new BoolReactiveProperty(false);
+			public readonly BoolReactiveProperty HasExited = new BoolReactiveProperty(false);
+
 		}
 	
 		public void ChangeState(Enum targetState)
@@ -45,8 +49,10 @@ namespace _Scripts.RxDevKit.StateMachine
 					_running = false;
 					state.HasEntered.Value = true;
 					_currentState.OnNext(state.Estate);
+					
+					_current = state.Estate;
 					//_history.Add(state.Estate);
-				
+
 				}).AddTo(state.Disposable);
 			};
 			state.Exit = () =>
@@ -55,12 +61,33 @@ namespace _Scripts.RxDevKit.StateMachine
 				_broker.PublishAsync(new Tuple<Enum,bool>(targetState,false)).Subscribe(_ =>
 				{
 					_running = false;
+					state.HasExited.Value = true;
+
 					if(!BlendMode)Next();
 				}).AddTo(state.Disposable);
 			};
 			state.Estate = targetState;
 			_queue.Add(state);
 			Next();
+		}
+
+		private void OnCancel()
+		{
+			var state = new State<Enum>();
+			state.Exit = () =>
+			{
+				_running = true;
+				_broker.PublishAsync(new Tuple<Enum,bool>(_current,false)).Subscribe(_ =>
+				{
+					_running = false;
+					state.HasExited.Value = true;
+
+					if(!BlendMode)Next();
+				}).AddTo(state.Disposable);
+			};
+			state.Estate = _current;
+			state.HasEntered.Value = true;
+			_queue.Add(state);
 		}
 
 		private void Next()
@@ -85,10 +112,12 @@ namespace _Scripts.RxDevKit.StateMachine
 			}
 			else
 			{
+
 				//regular mode : enter -> exit -> enter -> 
 				var disposable  = new CompositeDisposable();
 				if (targetState.HasEntered.Value == false)
 				{
+
 					targetState.Enter();
 					if (!targetState.Estate.Equals(_nextState))
 					{
@@ -99,21 +128,24 @@ namespace _Scripts.RxDevKit.StateMachine
 				}
 				else
 				{
-					_queue.RemoveAt(0);
 					targetState.Exit();
-					disposable.Dispose();
+					targetState.HasExited
+						.Where(b => b)
+						.Subscribe(_=>
+						{
+							_queue.RemoveAt(0);
+							disposable.Dispose();
+						}).AddTo(disposable);	
 				}
 			}
 		}
 
 		public void Cancel()
 		{
-			_queue.ForEach(x =>
-			{
-				x.Disposable.Dispose();
-			});
+			_queue.ForEach(x =>x.Disposable.Dispose());
 			_queue.Clear();
-			_running = false;	
+			_running = false;
+			OnCancel();
 		}
 
 		public IDisposable OnEnter(Enum where, Func<IObservable<Unit>> asyncMessageReceiver)
