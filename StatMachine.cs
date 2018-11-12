@@ -4,7 +4,7 @@ using System.Linq;
 using UniRx;
 using UnityEngine;
 
-namespace _Scripts.RxDevKit.StateMachine
+namespace RxDevKit.StateMachine
 {
 	public class StateMachine<Enum>: IObservable<Enum>
 	{
@@ -128,14 +128,25 @@ namespace _Scripts.RxDevKit.StateMachine
 				}
 				else
 				{
-					targetState.Exit();
-					targetState.HasExited
-						.Where(b => b)
-						.Subscribe(_=>
-						{
-							_queue.RemoveAt(0);
-							disposable.Dispose();
-						}).AddTo(disposable);	
+					if (_hasSubscribers)
+					{
+						targetState.Exit();
+						targetState.HasExited
+							.Where(b => b)
+							.Subscribe(_=>
+							{
+								_queue.RemoveAt(0);
+								disposable.Dispose();
+							}).AddTo(disposable);	
+					}
+					else
+					{
+						_queue.RemoveAt(0);
+						targetState.Exit();
+						disposable.Dispose();
+
+					}
+					
 				}
 			}
 		}
@@ -148,8 +159,10 @@ namespace _Scripts.RxDevKit.StateMachine
 			OnCancel();
 		}
 
+		private bool _hasSubscribers = false;
 		public IDisposable OnEnter(Enum where, Func<IObservable<Unit>> asyncMessageReceiver)
 		{
+			_hasSubscribers = true;
 			return _broker.Subscribe<Tuple<Enum, bool>>((sate) =>
 			{
 				if (sate.Item1.Equals(where) && sate.Item2)
@@ -165,6 +178,7 @@ namespace _Scripts.RxDevKit.StateMachine
 	
 		public IDisposable OnExit(Enum where, Func<IObservable<Unit>> asyncMessageReceiver)
 		{
+			_hasSubscribers = true;
 			return _broker.Subscribe<Tuple<Enum, bool>>((sate) =>
 			{
 				if (sate.Item1.Equals(where) && !sate.Item2)
@@ -184,4 +198,3 @@ namespace _Scripts.RxDevKit.StateMachine
 		}
 	}
 }
-
