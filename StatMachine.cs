@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace _Scripts.RxDevKit.StateMachine
 {
-	public class StateMachine<Enum> 
+	public class StateMachine<Enum>: IObservable<Enum>
 	{
 		private readonly List<State<Enum>> _queue = new List<State<Enum>>();
 		private AsyncMessageBroker _broker  = new AsyncMessageBroker();
@@ -15,8 +15,8 @@ namespace _Scripts.RxDevKit.StateMachine
 		//private	List<Enum> _history = new List<Enum>();
 	
 		public bool BlendMode = false;
-		public readonly ReactiveProperty<Enum> CurrentState = new ReactiveProperty<Enum>();
 
+		private readonly Subject<Enum> _currentState = new Subject<Enum>();
 		private class State<Enum>
 		{
 			public Action Enter;
@@ -44,7 +44,7 @@ namespace _Scripts.RxDevKit.StateMachine
 				{
 					_running = false;
 					state.HasEntered.Value = true;
-					CurrentState.Value = state.Estate;
+					_currentState.OnNext(state.Estate);
 					//_history.Add(state.Estate);
 				
 				}).AddTo(state.Disposable);
@@ -144,6 +144,11 @@ namespace _Scripts.RxDevKit.StateMachine
 					return Observable.ReturnUnit();
 				}
 			});
+		}
+
+		public IDisposable Subscribe(IObserver<Enum> observer)
+		{
+			return _currentState.Subscribe(observer);
 		}
 	}
 }
